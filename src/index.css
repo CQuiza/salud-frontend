@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+@theme {
+  --font-sans: "Lato", system-ui, sans-serif;
+
+  /* ── Bar color (teal/sage - for navbars, sidebars, topbars) ── */
+  --color-bar-50: #EEF5F4;
+  --color-bar-100: #D5E8E5;
+  --color-bar-200: #ABD1CB;
+  --color-bar-300: #7DBAB1;
+  --color-bar-400: #5F9EA0;
+  --color-bar-500: #4D8486;
+  --color-bar-600: #3D6B6D;
+  --color-bar-700: #2E5254;
+  --color-bar-800: #203A3B;
+  --color-bar-900: #122122;
+
+  /* ── Content color (warm sand - for page backgrounds, sections) ── */
+  --color-content-50: #FAF7F2;
+  --color-content-100: #F2EBDE;
+  --color-content-200: #E3D9C6;
+  --color-content-300: #D4C5A9;
+  --color-content-400: #C1B08E;
+  --color-content-500: #A79872;
+  --color-content-600: #8C7F5E;
+  --color-content-700: #6F644A;
+  --color-content-800: #534A37;
+  --color-content-900: #363025;
+
+  /* ── Override Bootstrap primary to match bar teal ── */
+  --bs-primary: #5F9EA0;
+  --bs-primary-rgb: 95, 158, 160;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "Lato", system-ui, sans-serif;
+}
+
+/* Bootstrap overrides */
+.btn-primary {
+  --bs-btn-bg: #5F9EA0;
+  --bs-btn-border-color: #5F9EA0;
+  --bs-btn-hover-bg: #4D8486;
+  --bs-btn-hover-border-color: #4D8486;
+  --bs-btn-active-bg: #3D6B6D;
+  --bs-btn-active-border-color: #3D6B6D;
+}
+
+/* Neutralize Bootstrap blue links - use bar color instead */
+a, .btn-link, .nav-link {
+  color: #4D8486;
+  text-decoration: none;
+}
+a:hover, .btn-link:hover, .nav-link:hover {
+  color: #3D6B6D;
+}
+a.text-primary {
+  color: #4D8486 !important;
+}
+.text-primary {
+  color: #4D8486 !important;
+}
