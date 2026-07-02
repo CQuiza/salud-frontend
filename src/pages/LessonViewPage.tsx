@@ -16,7 +16,7 @@ import Skeleton from '../components/atoms/Skeleton'
 import { FaArrowLeft, FaFilePdf, FaVideo, FaImage, FaFile, FaClipboardList, FaExternalLinkAlt, FaArrowUp, FaFileAlt, FaDownload, FaEye, FaCheck, FaUpload, FaSpinner } from 'react-icons/fa'
 import { lessonFileService } from '../services/lessonFileService'
 import { useAuth } from '../context/AuthContext'
-import type { Task } from '../types'
+
 
 function getYoutubeEmbedUrl(url: string): string | null {
   try {
@@ -40,7 +40,7 @@ function getGoogleDriveId(url: string): string | null {
   } catch { return null }
 }
 
-function TaskSubmissionUpload({ task, taskId }: { task: Task; taskId: number }) {
+function TaskSubmissionUpload({ taskId }: { taskId: number }) {
   const { user } = useAuth()
   const isStudent = user?.role === 'student'
   const { data: mySubmission, isLoading: loadingSubmission } = useMyTaskSubmission(taskId)
@@ -285,7 +285,7 @@ export default function LessonViewPage() {
                             <button onClick={() => downloadTaskFile(task.id)} className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaArrowUp /> Descargar</button>
                           )}
                         </div>
-                        {isStudent && <TaskSubmissionUpload task={task} taskId={task.id} />}
+                        {isStudent && <TaskSubmissionUpload taskId={task.id} />}
                       </div>
                     </div>
                   </Card>

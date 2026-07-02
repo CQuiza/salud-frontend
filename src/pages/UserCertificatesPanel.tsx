@@ -29,7 +29,7 @@ export default function UserCertificatesPanel() {
   )
   const { data: certTypes } = useCertificateTypes()
   const { data: courses } = useCourses()
-  const { data: enrollments, isLoading: loadingEnroll } = useEnrollments(
+  const { data: enrollments } = useEnrollments(
     { user_id: uid },
     { enabled: uid > 0 },
   )
@@ -247,7 +247,6 @@ export default function UserCertificatesPanel() {
           onClose={() => setBatchModalOpen(false)}
           userId={uid}
           userName={`${user?.name || ''} ${user?.first_last_name || ''}`.trim() || user?.email || ''}
-          typeMap={typeMap}
           certTypes={certTypes || []}
         />
       )}

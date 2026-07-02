@@ -8,7 +8,7 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const isStaff = user && ['superuser', 'admin', 'teacher'].includes(user.role)
 
-  const { data: stats, isLoading } = useDashboardStats({ enabled: isStaff })
+  const { data: stats, isLoading } = useDashboardStats({ enabled: !!isStaff })
 
   const statsCards = [
     { label: 'Usuarios activos', value: stats?.total_users ?? null, icon: FaUsers, color: 'text-bar-600 bg-bar-50' },

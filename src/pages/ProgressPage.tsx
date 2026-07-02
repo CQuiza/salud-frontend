@@ -41,7 +41,7 @@ export default function ProgressPage() {
 
   const { data: searchResults, isLoading: searching } = useUsers(
     debouncedSearch ? { search: debouncedSearch, limit: 500 } : undefined,
-    { enabled: isStaff && !!debouncedSearch },
+    { enabled: !!(isStaff && !!debouncedSearch) },
   )
   const { data: selectedUser } = useUser(selectedUserId ?? 0)
   const { data: progress, isLoading } = useAllProgressSummaries(selectedUserId ?? undefined)

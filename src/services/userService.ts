@@ -1,5 +1,5 @@
 import api from './api'
-import type { User, UserCreate, UserListResponse, UserUpdate, UserWithCertificates, UserWithCertificatesListResponse } from '../types'
+import type { User, UserCreate, UserListResponse, UserUpdate, UserWithCertificatesListResponse } from '../types'
 
 export const userService = {
   list: async (params?: Record<string, unknown>): Promise<UserListResponse> => {

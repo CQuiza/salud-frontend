@@ -67,7 +67,7 @@ export default function AssessmentView({ moduleId, onBack }: AssessmentViewProps
         selected_option_id: optId,
       }))
       const res = await submitAssessment.mutateAsync({
-        assessmentId: assessment.id,
+        assessmentId: assessment!.id,
         answers,
       })
       setResult(res)
