@@ -5,6 +5,8 @@ import HomePage from './pages/HomePage'
 import CatalogPage from './pages/CatalogPage'
 import SearchPage from './pages/SearchPage'
 import FaqPage from './pages/FaqPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import UsersPage from './pages/UsersPage'
@@ -48,6 +50,8 @@ export default function AppRouter() {
       <Route path="/catalog" element={<CatalogPage />} />
       <Route path="/search" element={<SearchPage />} />
       <Route path="/faq" element={<FaqPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
       <Route
         path="/login"
         element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />}

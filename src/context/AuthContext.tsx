@@ -16,14 +16,21 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 function getInitialUser(): User | null {
-  const raw = localStorage.getItem('user')
-  if (!raw) return null
-  try {
-    return JSON.parse(raw) as User
-  } catch {
-    localStorage.removeItem('user')
-    return null
-  }
+  localStorage.removeItem('user')
+  const uid = localStorage.getItem('_uid')
+  const role = localStorage.getItem('_role')
+  if (!uid || !role) return null
+  return { id: Number(uid), role } as User
+}
+
+function persistUser(user: User) {
+  localStorage.setItem('_uid', String(user.id))
+  localStorage.setItem('_role', user.role)
+}
+
+function clearPersistedUser() {
+  localStorage.removeItem('_uid')
+  localStorage.removeItem('_role')
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -33,8 +40,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (user) {
       authService.getMe<User>()
-        .then((u) => { setUser(u); localStorage.setItem('user', JSON.stringify(u)) })
-        .catch(() => { setUser(null); localStorage.removeItem('user'); setRefreshToken(null) })
+        .then((u) => { setUser(u); persistUser(u) })
+        .catch(() => { setUser(null); clearPersistedUser(); setRefreshToken(null) })
     }
   }, [])
 
@@ -52,12 +59,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (u) {
-        localStorage.setItem('user', JSON.stringify(u))
+        persistUser(u)
       }
       setUser(u)
 
       if (!u) {
-        navigate('/dashboard')
+        navigate('/login')
         return
       }
 
@@ -80,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // ignora errores de logout, igual limpiamos sesión local
     }
     setRefreshToken(null)
-    localStorage.removeItem('user')
+    clearPersistedUser()
     setUser(null)
     navigate('/login')
   }, [navigate])

@@ -134,7 +134,7 @@ export default function ModuleManager({ courseId, canManage }: ModuleManagerProp
                       <div className="p-3"><Skeleton count={3} className="h-12 w-full" /></div>
                     ) : lessons && lessons.length > 0 ? (
                       lessons.map((lesson) => (
-                        <div key={lesson.id} className="d-flex align-items-center justify-content-between border-bottom hover-bg-light" style={{ borderBottom: '1px solid #f0f0f0' }}>
+                        <div key={lesson.id} className="d-flex align-items-center justify-content-between border-bottom hover-bg-light" >
                           <Link to={`/courses/${courseId}/lessons/${lesson.id}`} className="d-flex flex-grow-1 align-items-center gap-3 px-4 py-3 text-decoration-none text-reset">
                             {contentTypeIcon(lesson)}
                             <div className="flex-grow-1 min-w-0">

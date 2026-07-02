@@ -1,14 +1,22 @@
+import { useState, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { toast } from 'sonner'
 import { useLesson } from '../hooks/useLessons'
 import { useModule } from '../hooks/useModules'
 import { useCourse } from '../hooks/useCourses'
 import { useTasksByLesson } from '../hooks/useTasks'
 import { useLessonFiles } from '../hooks/useLessonFiles'
+import { useMyTaskSubmission, useSubmitTask } from '../hooks/useTaskSubmissions'
+import { taskSubmissionService } from '../services/taskSubmissionService'
 import { downloadTaskFile } from '../lib/download'
+import { formatDate } from '../lib/dates'
+import { sanitizeUrl } from '../lib/sanitize'
 import Card from '../components/molecules/Card'
 import Skeleton from '../components/atoms/Skeleton'
-import { FaArrowLeft, FaFilePdf, FaVideo, FaImage, FaFile, FaClipboardList, FaExternalLinkAlt, FaArrowUp, FaFileAlt, FaDownload, FaEye } from 'react-icons/fa'
+import { FaArrowLeft, FaFilePdf, FaVideo, FaImage, FaFile, FaClipboardList, FaExternalLinkAlt, FaArrowUp, FaFileAlt, FaDownload, FaEye, FaCheck, FaUpload, FaSpinner } from 'react-icons/fa'
 import { lessonFileService } from '../services/lessonFileService'
+import { useAuth } from '../context/AuthContext'
+import type { Task } from '../types'
 
 function getYoutubeEmbedUrl(url: string): string | null {
   try {
@@ -32,10 +40,128 @@ function getGoogleDriveId(url: string): string | null {
   } catch { return null }
 }
 
+function TaskSubmissionUpload({ task, taskId }: { task: Task; taskId: number }) {
+  const { user } = useAuth()
+  const isStudent = user?.role === 'student'
+  const { data: mySubmission, isLoading: loadingSubmission } = useMyTaskSubmission(taskId)
+  const submitTask = useSubmitTask()
+  const [file, setFile] = useState<File | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [downloading, setDownloading] = useState(false)
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]
+    if (f) setFile(f)
+  }, [])
+
+  const handleConfirm = useCallback(async () => {
+    if (!file) return
+    try {
+      await submitTask.mutateAsync({ taskId, file })
+      toast.success('Tarea entregada correctamente')
+      setConfirmOpen(false)
+      setFile(null)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al subir la tarea'
+      toast.error(msg)
+    }
+  }, [file, taskId, submitTask])
+
+  const handleDownload = useCallback(async () => {
+    if (!mySubmission) return
+    setDownloading(true)
+    try {
+      await taskSubmissionService.downloadFile(mySubmission.id, mySubmission.original_filename)
+    } catch {
+      toast.error('Error al descargar el archivo')
+    } finally {
+      setDownloading(false)
+    }
+  }, [mySubmission])
+
+  if (!isStudent) return null
+  if (loadingSubmission) return <div className="mt-2"><Skeleton className="h-10 w-full" /></div>
+
+  if (mySubmission) {
+    return (
+      <div className="mt-2 p-3 rounded border bg-success bg-opacity-10">
+        <div className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center gap-2">
+            <FaCheck className="text-success" />
+            <div>
+              <small className="fw-medium text-success">Entregado</small>
+              <small className="d-block text-muted" style={{ fontSize: '0.7rem' }}>
+                {mySubmission.original_filename} · {formatDate(mySubmission.submitted_at, { withTime: true })}
+              </small>
+            </div>
+          </div>
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+          >
+            {downloading ? <><FaSpinner className="animate-spin" /> Descargando...</> : <><FaDownload /> Descargar</>}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mt-2">
+      <div className="p-3 rounded border bg-warning bg-opacity-10">
+        <small className="text-muted d-block mb-2">
+          <FaUpload className="me-1" /> Solo puedes cargar un archivo PDF. Un solo intento.
+        </small>
+        <div className="d-flex align-items-center gap-2">
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={handleFileChange}
+            className="form-control form-control-sm"
+            style={{ maxWidth: 250 }}
+          />
+          <button
+            onClick={() => setConfirmOpen(true)}
+            disabled={!file}
+            className="btn btn-sm btn-bar-500 text-white d-inline-flex align-items-center gap-1"
+          >
+            <FaUpload /> Subir
+          </button>
+        </div>
+      </div>
+
+      {confirmOpen && file && (
+        <div className="mt-2 p-3 rounded border bg-white shadow-sm">
+          <p className="small fw-semibold mb-1">¿Confirmas el envío?</p>
+          <p className="small text-muted mb-2">
+            Solo tienes un intento. Una vez enviada no podrás modificar ni reemplazar tu solución.
+          </p>
+          <small className="d-block text-muted mb-2">
+            Archivo: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+          </small>
+          <div className="d-flex gap-2">
+            <button
+              onClick={handleConfirm}
+              disabled={submitTask.isPending}
+              className="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
+            >
+              {submitTask.isPending ? <><FaSpinner className="animate-spin" /> Enviando...</> : <><FaCheck /> Sí, enviar</>}
+            </button>
+            <button onClick={() => setConfirmOpen(false)} className="btn btn-sm btn-secondary">Cancelar</button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function LessonViewPage() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>()
   const lessonIdNum = Number(lessonId)
   const courseIdNum = Number(courseId)
+  const { user } = useAuth()
+  const isStudent = user?.role === 'student'
   const { data: lesson, isLoading: loadingLesson } = useLesson(lessonIdNum)
   const { data: mod } = useModule(lesson?.module_id ?? 0)
   const { data: course } = useCourse(courseIdNum)
@@ -109,7 +235,8 @@ export default function LessonViewPage() {
 
             {lesson.image_content_url && (() => {
               const gId = getGoogleDriveId(lesson.image_content_url)
-              const src = gId ? `https://drive.google.com/thumbnail?id=${gId}&sz=w1000` : lesson.image_content_url
+              const src = sanitizeUrl(gId ? `https://drive.google.com/thumbnail?id=${gId}&sz=w1000` : lesson.image_content_url)
+              if (!src) return null
               return (
                 <div className="px-4 py-4 border-bottom">
                   <div className="d-flex align-items-center gap-1 small fw-medium text-muted mb-2">
@@ -122,8 +249,9 @@ export default function LessonViewPage() {
 
             {lesson.file_content_url && (() => {
               const gId = getGoogleDriveId(lesson.file_content_url)
-              const dlUrl = gId ? `https://drive.google.com/uc?export=download&id=${gId}` : lesson.file_content_url
-              const previewUrl = gId ? `https://drive.google.com/file/d/${gId}/preview` : null
+              const dlUrl = sanitizeUrl(gId ? `https://drive.google.com/uc?export=download&id=${gId}` : lesson.file_content_url)
+              const previewUrl = sanitizeUrl(gId ? `https://drive.google.com/file/d/${gId}/preview` : null)
+              if (!dlUrl) return null
               return (
                 <div className="px-4 py-4 border-bottom">
                   <div className="d-flex align-items-center gap-1 small fw-medium text-muted mb-2">
@@ -151,12 +279,13 @@ export default function LessonViewPage() {
                         {task.description && <small className="text-muted">{task.description}</small>}
                         <div className="mt-2 d-flex flex-wrap gap-2">
                           {task.file_type === 'google_drive' && task.google_drive_link && (
-                            <a href={task.google_drive_link} target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaExternalLinkAlt /> Ver en Google Drive</a>
+                            <a href={sanitizeUrl(task.google_drive_link)} target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaExternalLinkAlt /> Ver en Google Drive</a>
                           )}
                           {task.file_type === 'upload' && task.file_url && (
                             <button onClick={() => downloadTaskFile(task.id)} className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaArrowUp /> Descargar</button>
                           )}
                         </div>
+                        {isStudent && <TaskSubmissionUpload task={task} taskId={task.id} />}
                       </div>
                     </div>
                   </Card>
@@ -186,7 +315,7 @@ export default function LessonViewPage() {
                         <iframe src={embedUrl} className="position-absolute inset-0 w-100 h-100 rounded-3 border" allowFullScreen title={lesson.title} />
                       </div>
                     ) : (
-                      <video controls src={lesson.video_content_url} className="rounded-3 border w-100" />
+                      <video controls src={sanitizeUrl(lesson.video_content_url)} className="rounded-3 border w-100" />
                     )}
                   </div>
                 </Card>

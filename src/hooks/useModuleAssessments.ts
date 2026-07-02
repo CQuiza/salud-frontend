@@ -63,5 +63,6 @@ export function useAllProgressSummaries(userId?: number) {
   return useQuery<AllProgressSummary>({
     queryKey: ['all-progress-summaries', userId],
     queryFn: () => moduleAssessmentService.getAllSummaries(userId),
+    enabled: !!userId,
   })
 }

@@ -1,20 +1,24 @@
 @import "tailwindcss";
 @import "bootstrap/dist/css/bootstrap.min.css";
 
-@theme {
-  --font-sans: "Lato", system-ui, sans-serif;
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
 
-  /* ── Bar color (teal/sage - for navbars, sidebars, topbars) ── */
-  --color-bar-50: #EEF5F4;
-  --color-bar-100: #D5E8E5;
-  --color-bar-200: #ABD1CB;
-  --color-bar-300: #7DBAB1;
-  --color-bar-400: #5F9EA0;
-  --color-bar-500: #4D8486;
-  --color-bar-600: #3D6B6D;
-  --color-bar-700: #2E5254;
-  --color-bar-800: #203A3B;
-  --color-bar-900: #122122;
+@theme {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+
+  /* ── Bar color (green → blue palette for navbars, sidebars, topbars) ── */
+  --color-bar-50: #E8F5D4;
+  --color-bar-100: #D2EEA8;
+  --color-bar-200: #83CA18;
+  --color-bar-300: #4DC286;
+  --color-bar-400: #0EACE4;
+  --color-bar-500: #00A8E9;
+  --color-bar-600: #0079B9;
+  --color-bar-700: #004D89;
+  --color-bar-800: #003C6A;
+  --color-bar-900: #0D2B49;
 
   /* ── Content color (warm sand - for page backgrounds, sections) ── */
   --color-content-50: #FAF7F2;
@@ -28,38 +32,38 @@
   --color-content-800: #534A37;
   --color-content-900: #363025;
 
-  /* ── Override Bootstrap primary to match bar teal ── */
-  --bs-primary: #5F9EA0;
-  --bs-primary-rgb: 95, 158, 160;
+  /* ── Override Bootstrap primary to match bar blue ── */
+  --bs-primary: #00A8E9;
+  --bs-primary-rgb: 0, 168, 233;
 }
 
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "Lato", system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 /* Bootstrap overrides */
 .btn-primary {
-  --bs-btn-bg: #5F9EA0;
-  --bs-btn-border-color: #5F9EA0;
-  --bs-btn-hover-bg: #4D8486;
-  --bs-btn-hover-border-color: #4D8486;
-  --bs-btn-active-bg: #3D6B6D;
-  --bs-btn-active-border-color: #3D6B6D;
+  --bs-btn-bg: #00A8E9;
+  --bs-btn-border-color: #00A8E9;
+  --bs-btn-hover-bg: #0079B9;
+  --bs-btn-hover-border-color: #0079B9;
+  --bs-btn-active-bg: #004D89;
+  --bs-btn-active-border-color: #004D89;
 }
 
 /* Neutralize Bootstrap blue links - use bar color instead */
 a, .btn-link, .nav-link {
-  color: #4D8486;
+  color: #00A8E9;
   text-decoration: none;
 }
 a:hover, .btn-link:hover, .nav-link:hover {
-  color: #3D6B6D;
+  color: #0079B9;
 }
 a.text-primary {
-  color: #4D8486 !important;
+  color: #00A8E9 !important;
 }
 .text-primary {
-  color: #4D8486 !important;
+  color: #00A8E9 !important;
 }

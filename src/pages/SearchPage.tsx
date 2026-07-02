@@ -20,6 +20,7 @@ interface SearchResult {
 }
 
 export default function SearchPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [identityNumber, setIdentityNumber] = useState('')
   const [result, setResult] = useState<SearchResult | null>(null)
   const [loading, setLoading] = useState(false)
@@ -58,16 +59,30 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-content-50">
-      <header className="border-b border-bar-200 bg-bar-500">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <Link to="/">
-            <img src="/logo.png" alt="EduCert" className="h-14 w-auto object-contain" />
+      <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-200/30 shadow-sm">
+        <nav className="flex justify-between items-center w-full px-4 md:px-10 h-20 max-w-7xl mx-auto">
+          <Link to="/" className="flex items-center gap-4">
+            <img src="/logo.png" alt="Innova Center" className="h-30 w-auto" />
+            {/* <span className="text-2xl font-bold text-bar-900">Innova Center</span> */}
           </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm font-medium text-bar-100 hover:text-white transition-colors">Inicio</Link>
-            <Link to="/login" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-bar-600 hover:bg-bar-100 transition-colors">Iniciar sesión</Link>
+          <div className="hidden md:flex items-center gap-8">
+            <Link to="/search" className="text-sm font-medium tracking-wide text-neutral-600 hover:text-bar-900 transition-colors">Verificar certificado</Link>
+            <Link to="/catalog" className="text-sm font-medium tracking-wide text-neutral-600 hover:text-bar-900 transition-colors">Catálogo</Link>
+            <Link to="/login" className="bg-bar-900 text-white px-6 py-2.5 rounded-full text-sm font-medium tracking-wide hover:opacity-90 transition-all scale-95 active:scale-90">
+              Iniciar sesión
+            </Link>
           </div>
-        </div>
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-bar-900">
+            <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
+          </button>
+        </nav>
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-neutral-200/30 bg-white px-4 py-6 space-y-4">
+            <Link to="/search" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-neutral-600 hover:text-bar-900">Verificar certificado</Link>
+            <Link to="/catalog" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-neutral-600 hover:text-bar-900">Catálogo</Link>
+            <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block text-center bg-bar-900 text-white px-6 py-2.5 rounded-full text-sm font-medium">Iniciar sesión</Link>
+          </div>
+        )}
       </header>
 
       <div className="container-fluid">
@@ -75,7 +90,7 @@ export default function SearchPage() {
           <div className="col-12 col-lg-6 d-flex flex-column justify-content-center p-5">
             <div className="mx-auto" style={{ maxWidth: 480 }}>
               <h1 className="fw-bold text-neutral-800">Verificar Certificados</h1>
-              <p className="text-muted mb-4">Ingresa tu número de identificación para consultar tus certificados</p>
+              <p className="text-muted mb-4 text-justify">Ingresa tu número de identificación para consultar tus certificados</p>
 
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">

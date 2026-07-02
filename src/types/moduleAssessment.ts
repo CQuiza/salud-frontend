@@ -49,6 +49,16 @@ export interface AttemptResult {
   answers: AnswerResult[]
 }
 
+export interface TaskProgressItem {
+  task_id: number
+  task_title: string
+  submitted: boolean
+  submission_id: number | null
+  file_url: string | null
+  original_filename: string | null
+  submitted_at: string | null
+}
+
 export interface ModuleProgressItem {
   module_id: number
   module_title: string
@@ -57,6 +67,9 @@ export interface ModuleProgressItem {
   attempts_count: number
   last_score: number | null
   passed: boolean
+  total_tasks: number
+  submitted_tasks: number
+  tasks: TaskProgressItem[]
 }
 
 export interface CourseProgressSummary {

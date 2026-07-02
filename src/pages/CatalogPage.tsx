@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useCourses } from '../hooks/useCourses'
 import { Link } from 'react-router-dom'
 import Skeleton from '../components/atoms/Skeleton'
@@ -5,21 +6,36 @@ import PublicFooter from '../components/organisms/PublicFooter'
 import { FaGraduationCap, FaBookOpen, FaClock } from 'react-icons/fa'
 
 export default function CatalogPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { data: courses, isLoading } = useCourses({ limit: 50 })
   const published = (courses || []).filter((c) => c.status === 'published')
 
   return (
     <div className="min-h-screen bg-content-50">
-      <header className="border-b border-bar-200 bg-bar-500">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <Link to="/">
-            <img src="/logo.png" alt="EduCert" className="h-14 w-auto object-contain" />
+      <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-200/30 shadow-sm">
+        <nav className="flex justify-between items-center w-full px-4 md:px-10 h-20 max-w-7xl mx-auto">
+          <Link to="/" className="flex items-center gap-4">
+            <img src="/logo.png" alt="Innova Center" className="h-30 w-auto" />
+            {/* <span className="text-2xl font-bold text-bar-900">Innova Center</span> */}
           </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm font-medium text-bar-100 hover:text-white transition-colors">Inicio</Link>
-            <Link to="/login" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-bar-600 hover:bg-bar-100 transition-colors">Iniciar sesión</Link>
+          <div className="hidden md:flex items-center gap-8">
+            <Link to="/search" className="text-sm font-medium tracking-wide text-neutral-600 hover:text-bar-900 transition-colors">Verificar certificado</Link>
+            <Link to="/catalog" className="text-sm font-medium tracking-wide text-neutral-600 hover:text-bar-900 transition-colors">Catálogo</Link>
+            <Link to="/login" className="bg-bar-900 text-white px-6 py-2.5 rounded-full text-sm font-medium tracking-wide hover:opacity-90 transition-all scale-95 active:scale-90">
+              Iniciar sesión
+            </Link>
           </div>
-        </div>
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-bar-900">
+            <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
+          </button>
+        </nav>
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-neutral-200/30 bg-white px-4 py-6 space-y-4">
+            <Link to="/search" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-neutral-600 hover:text-bar-900">Verificar certificado</Link>
+            <Link to="/catalog" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-neutral-600 hover:text-bar-900">Catálogo</Link>
+            <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block text-center bg-bar-900 text-white px-6 py-2.5 rounded-full text-sm font-medium">Iniciar sesión</Link>
+          </div>
+        )}
       </header>
 
       <section className="bg-gradient-to-r from-bar-600 to-bar-800 py-12">
@@ -57,7 +73,7 @@ export default function CatalogPage() {
                   {course.title}
                 </h3>
                 {course.description && (
-                  <p className="mt-2 text-sm text-neutral-500 line-clamp-3">{course.description}</p>
+                  <p className="mt-2 text-sm text-neutral-500 line-clamp-3 text-justify">{course.description}</p>
                 )}
                 <div className="mt-4 flex items-center gap-1.5 text-xs text-neutral-400">
                   <FaClock className="h-3.5 w-3.5" />

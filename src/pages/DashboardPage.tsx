@@ -39,7 +39,7 @@ export default function DashboardPage() {
           Hola, {user?.name || 'Usuario'}
         </h1>
         <p className="mt-1 small text-muted">
-          Panel principal de la plataforma EduCert
+          Panel principal de la plataforma InnovaCenter
         </p>
       </div>
 
@@ -93,7 +93,7 @@ export default function DashboardPage() {
           <div className="position-sticky" style={{ top: '1rem' }}>
             <img
               src="/panel-bg.jpg"
-              alt="Panel EduCert"
+              alt="Panel InnovaCenter"
               className="w-100 rounded-3 border shadow-sm"
             />
           </div>

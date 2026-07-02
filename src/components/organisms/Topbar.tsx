@@ -53,7 +53,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           <FaBars className="h-5 w-5" />
         </button>
         <Link to="/">
-          <img src="/logo.png" alt="EduCert" className="h-12 w-auto object-contain" />
+          <img src="/logo.png" alt="InnovaCenter" className="h-30 w-auto object-contain" />
         </Link>
       </div>
 
