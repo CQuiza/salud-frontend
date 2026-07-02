@@ -49,3 +49,13 @@ import type { Certificate } from './certificate'
 export interface UserWithCertificates extends User {
   certificates: Certificate[]
 }
+
+export interface UserListResponse {
+  items: User[]
+  total: number
+}
+
+export interface UserWithCertificatesListResponse {
+  items: UserWithCertificates[]
+  total: number
+}

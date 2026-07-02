@@ -27,14 +27,15 @@ export default function CoursesPage() {
   const [editing, setEditing] = useState<Course | null>(null)
 
   const { data: courses, isLoading } = useCourses()
-  const { data: users } = useUsers()
+  const { data: users } = useUsers({ role: 'teacher', limit: 500 })
   const { data: certTypes } = useCertificateTypes()
   const createCourse = useCreateCourse()
   const updateCourse = useUpdateCourse(editing?.id ?? 0)
 
   const teacherMap = useMemo(() => {
-    if (!users) return {} as Record<number, string>
-    return Object.fromEntries(users.map((u) => [u.id, u.name || u.email]))
+    const list = users?.items
+    if (!list) return {} as Record<number, string>
+    return Object.fromEntries(list.map((u) => [u.id, u.name || u.email]))
   }, [users])
 
   const certTypeMap = useMemo(() => {
@@ -146,7 +147,7 @@ export default function CoursesPage() {
         key={editing?.id ?? 'new-course'}
         open={modalOpen}
         editing={editing}
-        users={users}
+        users={users?.items}
         certTypes={certTypes}
         loading={createCourse.isPending || updateCourse.isPending}
         onSubmit={handleSubmit}

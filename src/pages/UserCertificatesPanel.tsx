@@ -24,7 +24,7 @@ export default function UserCertificatesPanel() {
 
   const { data: user, isLoading: loadingUser } = useUser(uid)
   const { data: certificates, isLoading: loadingCerts } = useCertificates(
-    { user_id: uid },
+    { user_id: uid, limit: 500 },
     { enabled: uid > 0 },
   )
   const { data: certTypes } = useCertificateTypes()
@@ -80,10 +80,11 @@ export default function UserCertificatesPanel() {
   const isLoading = loadingUser || loadingCerts
 
   const filteredCertificates = useMemo(() => {
-    if (!certificates) return []
-    if (!searchQuery.trim()) return certificates
+    const list = certificates?.items
+    if (!list) return []
+    if (!searchQuery.trim()) return list
     const q = searchQuery.toLowerCase()
-    return certificates.filter((cert) => {
+    return list.filter((cert) => {
       const info = cert.certificate_type_id != null ? typeInfoMap[cert.certificate_type_id] : undefined
       if (!info) return false
       return (

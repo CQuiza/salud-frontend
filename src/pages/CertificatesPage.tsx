@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Form } from 'react-bootstrap'
 import { useAuth } from '../context/AuthContext'
@@ -8,6 +8,7 @@ import { useCertificateTypes } from '../hooks/useCertificateTypes'
 import Card from '../components/molecules/Card'
 import SearchBar from '../components/molecules/SearchBar'
 import SearchableSelect from '../components/molecules/SearchableSelect'
+import Pagination from '../components/molecules/Pagination'
 import Modal from '../components/molecules/Modal'
 import Button from '../components/atoms/Button'
 import Badge from '../components/atoms/Badge'
@@ -20,6 +21,8 @@ import { certificateStatusVariant } from '../lib/statusVariant'
 import { config } from '../config'
 import type { Certificate } from '../types'
 
+const PAGE_SIZE = 15
+
 interface UserGroup {
   userId: number; userName: string; userEmail: string; userDoc: string; certificates: Certificate[]
 }
@@ -28,7 +31,9 @@ export default function CertificatesPage() {
   const { user } = useAuth()
   const isAdmin = user?.role === 'superuser' || user?.role === 'admin'
   const [search, setSearch] = useState('')
-  const [, setPage] = useState(1)
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [adminPage, setAdminPage] = useState(1)
+  const [plainPage, setPlainPage] = useState(1)
   const [expandedUsers, setExpandedUsers] = useState<Set<number>>(new Set())
   const [issueModalOpen, setIssueModalOpen] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<string | number>('')
@@ -39,9 +44,28 @@ export default function CertificatesPage() {
   const [editingCert, setEditingCert] = useState<Certificate | null>(null)
   const [editStatus, setEditStatus] = useState('')
 
-  const { data: certifiedUsers, isLoading: loadingCertified } = useCertifiedUsers({ enabled: isAdmin })
-  const { data: students } = useUsers({ role: 'student' }, { enabled: isAdmin })
-  const { data: plainCerts, isLoading: loadingPlain } = useCertificates({ enabled: !isAdmin })
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(search)
+      setAdminPage(1)
+      setPlainPage(1)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [search])
+
+  const adminSkip = (adminPage - 1) * PAGE_SIZE
+  const plainSkip = (plainPage - 1) * PAGE_SIZE
+  const s = debouncedSearch || undefined
+
+  const { data: certifiedUsers, isLoading: loadingCertified } = useCertifiedUsers(
+    { skip: adminSkip, limit: PAGE_SIZE, search: s },
+    { enabled: isAdmin },
+  )
+  const { data: students } = useUsers({ role: 'student', limit: 500 }, { enabled: isAdmin })
+  const { data: plainCerts, isLoading: loadingPlain } = useCertificates(
+    { skip: plainSkip, limit: PAGE_SIZE, search: s },
+    { enabled: !isAdmin },
+  )
   const { data: certTypes } = useCertificateTypes()
   const issueCert = useIssueCertificate()
   const updateCert = useUpdateCertificate(editingCert?.id ?? 0)
@@ -54,17 +78,14 @@ export default function CertificatesPage() {
 
   const userGroups: UserGroup[] = useMemo(() => {
     if (!isAdmin || !certifiedUsers) return []
-    return certifiedUsers.filter((cu) => cu.certificates && cu.certificates.length > 0).map((cu) => ({
+    return certifiedUsers.items.filter((cu) => cu.certificates && cu.certificates.length > 0).map((cu) => ({
       userId: cu.id, userName: cu.name || `Usuario #${cu.id}`, userEmail: cu.email, userDoc: cu.identity_number,
       certificates: [...cu.certificates].sort((a, b) => new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime()),
     })).sort((a, b) => a.userName.localeCompare(b.userName))
   }, [isAdmin, certifiedUsers])
 
-  const filteredGroups = useMemo(() => {
-    const q = search.toLowerCase()
-    if (!q) return userGroups
-    return userGroups.filter((g) => g.userName.toLowerCase().includes(q) || g.userEmail.toLowerCase().includes(q) || g.userDoc.includes(q) || g.certificates.some((c) => c.unique_id.toLowerCase().includes(q) || typeMap[c.certificate_type_id ?? -1]?.toLowerCase().includes(q)))
-  }, [userGroups, search, typeMap])
+  const adminTotalPages = Math.ceil((certifiedUsers?.total ?? 0) / PAGE_SIZE)
+  const plainTotalPages = Math.ceil((plainCerts?.total ?? 0) / PAGE_SIZE)
 
   function toggleUser(userId: number) {
     setExpandedUsers((prev) => { const n = new Set(prev); if (n.has(userId)) n.delete(userId); else n.add(userId); return n })
@@ -84,9 +105,9 @@ export default function CertificatesPage() {
     catch (err) { toast.error(getErrorMessage(err)) }
   }
 
-  const flatRows = useMemo(() => !isAdmin && plainCerts ? plainCerts.map((c) => ({ cert: c })) : [], [isAdmin, plainCerts])
+  const flatRows = useMemo(() => !isAdmin && plainCerts ? plainCerts.items.map((c) => ({ cert: c })) : [], [isAdmin, plainCerts])
 
-  const studentOptions = useMemo(() => (students || []).map((s) => ({ value: s.id, label: `${s.name || ''} ${s.first_last_name || ''}`.trim() || s.email, sublabel: `${s.identity_type} ${s.identity_number} — ${s.email}` })), [students])
+  const studentOptions = useMemo(() => (students?.items || []).map((s) => ({ value: s.id, label: `${s.name || ''} ${s.first_last_name || ''}`.trim() || s.email, sublabel: `${s.identity_type} ${s.identity_number} — ${s.email}` })), [students])
   const certTypeOptions = useMemo(() => (certTypes || []).map((t) => ({
     value: t.id,
     label: t.name,
@@ -105,66 +126,71 @@ export default function CertificatesPage() {
 
       <Card padding={false}>
         <div className="border-bottom px-3 py-3">
-          <SearchBar value={search} onChange={(v) => { setSearch(v); setPage(1); setExpandedUsers(new Set()) }} placeholder="Buscar por estudiante, documento o UUID..." />
+          <SearchBar value={search} onChange={setSearch} placeholder="Buscar por estudiante, documento o UUID..." />
         </div>
         {isLoading ? (
           <div className="p-4"><Skeleton count={5} className="h-10 w-full" /></div>
         ) : isAdmin ? (
-          <div className="divide-y">
-            {filteredGroups.length === 0 ? (
-              <p className="text-center py-5 small text-muted mb-0">No se encontraron certificados.</p>
-            ) : filteredGroups.map((group) => {
-              const expanded = expandedUsers.has(group.userId)
-              return (
-                <div key={group.userId}>
-                  <button onClick={() => toggleUser(group.userId)} className="w-100 d-flex align-items-center justify-content-between px-4 py-3 text-start border-0 bg-transparent hover-bg-light">
-                    <div className="d-flex align-items-center gap-3 min-w-0">
-                      {expanded ? <FaChevronDown className="text-muted flex-shrink-0" /> : <FaChevronRight className="text-muted flex-shrink-0" />}
-                      <div className="min-w-0">
-                        <p className="small fw-semibold text-neutral-800 mb-0 truncate">{group.userName}</p>
-                        <small className="text-muted">{group.userEmail} · {group.userDoc}</small>
+          <>
+            <div className="divide-y">
+              {userGroups.length === 0 ? (
+                <p className="text-center py-5 small text-muted mb-0">No se encontraron certificados.</p>
+              ) : userGroups.map((group) => {
+                const expanded = expandedUsers.has(group.userId)
+                return (
+                  <div key={group.userId}>
+                    <button onClick={() => toggleUser(group.userId)} className="w-100 d-flex align-items-center justify-content-between px-4 py-3 text-start border-0 bg-transparent hover-bg-light">
+                      <div className="d-flex align-items-center gap-3 min-w-0">
+                        {expanded ? <FaChevronDown className="text-muted flex-shrink-0" /> : <FaChevronRight className="text-muted flex-shrink-0" />}
+                        <div className="min-w-0">
+                          <p className="small fw-semibold text-neutral-800 mb-0 truncate">{group.userName}</p>
+                          <small className="text-muted">{group.userEmail} · {group.userDoc}</small>
+                        </div>
                       </div>
-                    </div>
-                    <Badge variant="default">{group.certificates.length} certificado{group.certificates.length !== 1 ? 's' : ''}</Badge>
-                  </button>
-                  {expanded && (
-                    <div className="table-responsive border-top">
-                      <table className="table table-sm table-striped mb-0">
-                        <thead className="table-light">
-                          <tr>
-                            <th className="small text-muted text-center" style={{width:'50%'}}>Tipo</th>
-                            <th className="small text-muted text-center" style={{width:'10%'}}>Estado</th>
-                            <th className="small text-muted text-center" style={{width:'12%'}}>Emitido</th>
-                            <th className="small text-muted text-center" style={{width:'12%'}}>Expira</th>
-                            <th className="small text-muted text-center" style={{width:'auto'}}>UUID</th>
-                            <th className="small text-muted text-center" style={{width:'auto'}}>Acciones</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {group.certificates.map((cert) => (
-                            <tr key={cert.id}>
-                              <td className="text-start align-middle">{cert.certificate_type_id != null ? typeMap[cert.certificate_type_id] || `ID: ${cert.certificate_type_id}` : '—'}</td>
-                              <td className="text-center align-middle"><Badge variant={certificateStatusVariant(cert.status)}>{cert.status}</Badge></td>
-                              <td className="text-center align-middle small text-nowrap">{formatDate(cert.issued_at)}</td>
-                              <td className="text-center align-middle small text-nowrap">{!cert.expires_at ? '—' : formatDate(cert.expires_at)}</td>
-                              <td className="text-center align-middle"><small className="font-monospace text-muted cursor-pointer" title={cert.unique_id} onClick={() => navigator.clipboard.writeText(cert.unique_id)}>{cert.unique_id.slice(0, 8)}</small></td>
-                              <td className="align-middle text-end text-nowrap">
-                                <div className="d-flex justify-content-end gap-1">
-                                  <button onClick={() => window.open(`${config.apiUrl}/certificates/view/${cert.unique_id}`, '_blank')} className="btn btn-sm btn-outline-secondary"><FaFilePdf /></button>
-                                  <button onClick={() => window.open(`${config.apiUrl}/certificates/view/${cert.unique_id}/qr`, '_blank')} className="btn btn-sm btn-outline-secondary"><FaQrcode /></button>
-                                  <button onClick={() => openEdit(cert)} className="btn btn-sm btn-outline-secondary"><FaPencilAlt /></button>
-                                </div>
-                              </td>
+                      <Badge variant="default">{group.certificates.length} certificado{group.certificates.length !== 1 ? 's' : ''}</Badge>
+                    </button>
+                    {expanded && (
+                      <div className="table-responsive border-top">
+                        <table className="table table-sm table-striped mb-0">
+                          <thead className="table-light">
+                            <tr>
+                              <th className="small text-muted text-center" style={{width:'50%'}}>Tipo</th>
+                              <th className="small text-muted text-center" style={{width:'10%'}}>Estado</th>
+                              <th className="small text-muted text-center" style={{width:'12%'}}>Emitido</th>
+                              <th className="small text-muted text-center" style={{width:'12%'}}>Expira</th>
+                              <th className="small text-muted text-center" style={{width:'auto'}}>UUID</th>
+                              <th className="small text-muted text-center" style={{width:'auto'}}>Acciones</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+                          </thead>
+                          <tbody>
+                            {group.certificates.map((cert) => (
+                              <tr key={cert.id}>
+                                <td className="text-start align-middle">{cert.certificate_type_id != null ? typeMap[cert.certificate_type_id] || `ID: ${cert.certificate_type_id}` : '—'}</td>
+                                <td className="text-center align-middle"><Badge variant={certificateStatusVariant(cert.status)}>{cert.status}</Badge></td>
+                                <td className="text-center align-middle small text-nowrap">{formatDate(cert.issued_at)}</td>
+                                <td className="text-center align-middle small text-nowrap">{!cert.expires_at ? '—' : formatDate(cert.expires_at)}</td>
+                                <td className="text-center align-middle"><small className="font-monospace text-muted cursor-pointer" title={cert.unique_id} onClick={() => navigator.clipboard.writeText(cert.unique_id)}>{cert.unique_id.slice(0, 8)}</small></td>
+                                <td className="align-middle text-end text-nowrap">
+                                  <div className="d-flex justify-content-end gap-1">
+                                    <button onClick={() => window.open(`${config.apiUrl}/certificates/view/${cert.unique_id}`, '_blank')} className="btn btn-sm btn-outline-secondary"><FaFilePdf /></button>
+                                    <button onClick={() => window.open(`${config.apiUrl}/certificates/view/${cert.unique_id}/qr`, '_blank')} className="btn btn-sm btn-outline-secondary"><FaQrcode /></button>
+                                    <button onClick={() => openEdit(cert)} className="btn btn-sm btn-outline-secondary"><FaPencilAlt /></button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            {adminTotalPages > 1 && (
+              <Pagination page={adminPage} totalPages={adminTotalPages} onPageChange={setAdminPage} />
+            )}
+          </>
         ) : (
           <>
             <div className="table-responsive">
@@ -199,6 +225,9 @@ export default function CertificatesPage() {
               </table>
             </div>
             {flatRows.length === 0 && <p className="text-center py-5 small text-muted mb-0">No se encontraron certificados.</p>}
+            {plainTotalPages > 1 && (
+              <Pagination page={plainPage} totalPages={plainTotalPages} onPageChange={setPlainPage} />
+            )}
           </>
         )}
       </Card>

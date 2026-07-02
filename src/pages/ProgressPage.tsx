@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useAllProgressSummaries } from '../hooks/useModuleAssessments'
-import { useUsers } from '../hooks/useUsers'
+import { useUsers, useUser } from '../hooks/useUsers'
 import { taskSubmissionService } from '../services/taskSubmissionService'
 import Card from '../components/molecules/Card'
 import SearchBar from '../components/molecules/SearchBar'
@@ -28,19 +28,25 @@ export default function ProgressPage() {
     user && !isStaff ? user.id : null
   )
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [expandedCourse, setExpandedCourse] = useState<number | null>(null)
   const [downloading, setDownloading] = useState<number | null>(null)
 
-  const { data: users } = useUsers(undefined, { enabled: isStaff })
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [searchQuery])
+
+  const { data: searchResults, isLoading: searching } = useUsers(
+    debouncedSearch ? { search: debouncedSearch, limit: 500 } : undefined,
+    { enabled: isStaff && !!debouncedSearch },
+  )
+  const { data: selectedUser } = useUser(selectedUserId ?? 0)
   const { data: progress, isLoading } = useAllProgressSummaries(selectedUserId ?? undefined)
 
-  const filteredUsers = isStaff && users
-    ? users.filter(
-        (u: User) =>
-          u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          u.email.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : []
+  const filteredUsers: User[] = searchResults?.items ?? []
 
   async function handleDownload(mod: ModuleProgressItem) {
     const task = mod.tasks.find((t) => t.submitted && t.submission_id)
@@ -49,7 +55,6 @@ export default function ProgressPage() {
     try {
       await taskSubmissionService.downloadFile(task.submission_id, task.original_filename ?? undefined)
     } catch {
-      // silent
     } finally {
       setDownloading(null)
     }
@@ -75,12 +80,12 @@ export default function ProgressPage() {
           <div className="p-3">
             <p className="small fw-semibold text-neutral-700 mb-2">Buscar alumno</p>
             <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Nombre o email del alumno..." />
-            {searchQuery && filteredUsers.length > 0 && (
+            {searchQuery && !searching && filteredUsers.length > 0 && (
               <div className="mt-2 border rounded-2">
                 {filteredUsers.slice(0, 10).map((u: User) => (
                   <button
                     key={u.id}
-                    onClick={() => { setSelectedUserId(u.id); setSearchQuery('') }}
+                    onClick={() => { setSelectedUserId(u.id); setSearchQuery(''); setDebouncedSearch('') }}
                     className="d-block w-100 text-start px-3 py-2 border-bottom hover-bg-light bg-transparent border-0"
                   >
                     <span className="small fw-medium">{u.name}</span>
@@ -89,10 +94,13 @@ export default function ProgressPage() {
                 ))}
               </div>
             )}
+            {searchQuery && !searching && filteredUsers.length === 0 && (
+              <div className="mt-2 small text-muted">No se encontraron alumnos.</div>
+            )}
             {selectedUserId && (
               <div className="mt-2">
                 <span className="badge bg-bar-500 text-white d-inline-flex align-items-center gap-2 px-3 py-2">
-                  {users?.find((u: User) => u.id === selectedUserId)?.name || 'Usuario'}
+                  {selectedUser?.name || 'Usuario'}
                   <button onClick={() => setSelectedUserId(null)} className="btn-close btn-close-white" style={{ fontSize: '0.5rem' }} />
                 </span>
               </div>

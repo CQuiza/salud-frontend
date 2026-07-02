@@ -45,3 +45,8 @@ export interface Certificate {
   created_at: string
   updated_at: string
 }
+
+export interface CertificateListResponse {
+  items: Certificate[]
+  total: number
+}
