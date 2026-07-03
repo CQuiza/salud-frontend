@@ -219,7 +219,7 @@ export default function HomePage() {
                     <span className="material-symbols-outlined">rocket_launch</span> Nuestra Misión
                   </h3>
                   <p className="text-base text-neutral-600 leading-relaxed text-justify">
-                    Liderar la transformación digital de la educación en salud, proporcionando herramientas accesibles y de alta calidad que permitan a los profesionales mantenerse a la vanguardia del conocimiento médico.
+                    Impulsar la actualización y el desarrollo continuo de los profesionales del sector salud mediante experiencias de aprendizaje digital innovadoras, accesibles y alineadas con los avances científicos y tecnológicos del ámbito sanitario.
                   </p>
                 </div>
                 <div className="bg-white p-8 rounded-2xl shadow-sm border-l-4 border-bar-200 translate-x-4 md:translate-x-8">
@@ -227,7 +227,7 @@ export default function HomePage() {
                     <span className="material-symbols-outlined">visibility</span> Nuestra Visión
                   </h3>
                   <p className="text-base text-neutral-600 leading-relaxed text-justify">
-                    Ser reconocidos en 2030 como el ecosistema de aprendizaje virtual más influyente para el sector salud en Latinoamérica, destacando por nuestra innovación pedagógica y compromiso con la excelencia.
+                    Consolidarnos como el ecosistema digital de aprendizaje y actualización profesional más reconocido del sector salud en Colombia, destacándonos por integrar tecnología, innovación pedagógica y contenidos de alto impacto para responder a los desafíos de la medicina y la atención sanitaria del futuro.
                   </p>
                 </div>
               </div>
