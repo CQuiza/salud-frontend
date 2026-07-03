@@ -235,7 +235,7 @@ export default function LessonViewPage() {
 
             {lesson.image_content_url && (() => {
               const gId = getGoogleDriveId(lesson.image_content_url)
-              const src = sanitizeUrl(gId ? `https://drive.google.com/uc?export=view&id=${gId}` : lesson.image_content_url)
+              const src = sanitizeUrl(gId ? `https://lh3.googleusercontent.com/d/${gId}` : lesson.image_content_url)
               if (!src) return null
               return (
                 <div className="px-4 py-4 border-bottom">

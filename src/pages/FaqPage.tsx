@@ -4,12 +4,12 @@ import { FaChevronDown, FaChevronRight } from 'react-icons/fa'
 import PublicFooter from '../components/organisms/PublicFooter'
 
 const faqs = [
-  { q: '¿Cómo me inscribo a un curso?', a: 'Contáctanos por WhatsApp, selecciona el curso de tu interés, realiza el pago y envíanos tus datos personales. Te brindaremos certificación inmediata y acceso a la plataforma estudiantil para iniciar tu formación.' },
-  { q: '¿Los cursos tienen certificación?', a: 'Sí, todos nuestros cursos incluyen certificación inmediata, y cuentan con acceso a plataforma virtual de estudios 24/7 para que puedas realizar tu formación a tu ritmo.' },
-  { q: '¿Los certificados tienen verificación?', a: 'Sí, todos nuestros certificados cuentan con verificación inmediata mediante código QR, lo que permite validar su autenticidad de forma rápida y segura.' },
-  { q: '¿Puedo acceder al curso desde cualquier dispositivo?', a: 'Sí, la plataforma es compatible con computadores, tabletas y teléfonos móviles.' },
-  { q: '¿Tengo horario fijo para estudiar?', a: 'No, puedes avanzar a tu propio ritmo desde la plataforma virtual.' },
-  { q: '¿Puedo realizar varios cursos al mismo tiempo?', a: 'Sí, puedes inscribirte en uno o varios cursos según tus necesidades.' },
+  { q: '¿Desde qué dispositivos puedo acceder a la plataforma?', a: 'Nuestra plataforma está diseñada para funcionar correctamente en computadores, tabletas y teléfonos inteligentes, permitiéndote estudiar desde cualquier lugar con conexión a internet.' },
+  { q: '¿Debo conectarme en horarios específicos para estudiar?', a: 'No. Todos los cursos están disponibles en modalidad virtual y puedes ingresar cuando lo desees, avanzando según tu disponibilidad y ritmo de aprendizaje.' },
+  { q: '¿Es posible matricularme en varios cursos al mismo tiempo?', a: 'Sí. Puedes realizar una o varias inscripciones simultáneamente y desarrollar diferentes procesos de formación de acuerdo con tus objetivos profesionales.' },
+  { q: '¿Los programas incluyen certificado?', a: 'Sí. Al completar tu proceso de formación obtendrás un certificado digital y tendrás acceso permanente a la plataforma de aprendizaje durante el desarrollo del curso.' },
+  { q: '¿Cómo se valida la autenticidad de los certificados?', a: 'Cada certificado emitido cuenta con un sistema de verificación mediante código QR, facilitando la consulta y confirmación de su validez de forma rápida y segura.' },
+  { q: '¿Cuál es el proceso para inscribirme?', a: 'Para iniciar tu formación, comunícate con nuestro equipo a través de WhatsApp, selecciona el curso que deseas realizar, completa el proceso de pago y comparte la información solicitada para habilitar tu acceso a la plataforma virtual.' },
 ]
 
 export default function FaqPage() {
