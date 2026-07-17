@@ -91,7 +91,7 @@ export default function CourseFormModal({ open, editing, users, certTypes, loadi
                 <button type="button" onClick={handleRemoveImage} className="btn-close position-absolute top-0 end-0" style={{ fontSize: 10 }} />
               </div>
             )}
-            <Button type="button" variant="outline-secondary" onClick={() => fileInputRef.current?.click()}>
+            <Button type="button" variant="secondary" onClick={() => fileInputRef.current?.click()}>
               {imagePreviewUrl ? 'Cambiar imagen' : 'Seleccionar imagen'}
             </Button>
           </div>

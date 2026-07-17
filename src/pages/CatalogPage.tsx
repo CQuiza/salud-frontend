@@ -5,7 +5,7 @@ import Skeleton from '../components/atoms/Skeleton'
 import ImageLightbox from '../components/molecules/ImageLightbox'
 import PublicFooter from '../components/organisms/PublicFooter'
 import { config } from '../config'
-import { FaGraduationCap, FaBookOpen, FaClock } from 'react-icons/fa'
+import { FaGraduationCap, FaClock } from 'react-icons/fa'
 
 export default function CatalogPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
