@@ -100,8 +100,8 @@ export default function SearchPage() {
 
       <div className="container-fluid">
         <div className="row min-vh-70">
-          <div className="col-12 col-lg-6 d-flex flex-column justify-content-center p-5">
-            <div className="mx-auto" style={{ maxWidth: 480 }}>
+          <div className="col-12 col-lg-6 d-flex flex-column justify-content-center p-3 p-md-5">
+            <div className="mx-auto w-100" style={{ maxWidth: 480 }}>
               <h1 className="fw-bold text-neutral-800">Verificar Certificados</h1>
               <p className="text-muted mb-4 text-justify">Ingresa tu número de identificación para consultar tus certificados</p>
 
@@ -153,22 +153,22 @@ export default function SearchPage() {
                   <h6 className="fw-semibold mb-3">Certificados encontrados ({result.certificates.length})</h6>
 
                   {result.certificates.map((cert) => (
-                    <div key={cert.id} className="border rounded-3 p-4 bg-white shadow-sm mb-3">
-                      <div className="d-flex align-items-start justify-content-between gap-3">
-                        <div>
-                          <div className="d-flex align-items-center gap-2 mb-2">
+                    <div key={cert.id} className="border rounded-3 p-3 p-md-4 bg-white shadow-sm mb-3">
+                      <div className="d-flex flex-column flex-sm-row align-items-start justify-content-between gap-3">
+                        <div className="flex-grow-1 min-w-0">
+                          <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
                             <Badge variant={certificateStatusVariant(cert.status)}>{cert.status}</Badge>
                             {cert.certificate_type_id != null && typeMap[cert.certificate_type_id] && (
                               <span className="fw-bold text-neutral-800">{typeMap[cert.certificate_type_id]}</span>
                             )}
                           </div>
-                          <div className="d-flex gap-4 small text-muted">
+                          <div className="d-flex flex-wrap gap-2 gap-md-4 small text-muted">
                             <span className="d-flex align-items-center gap-1"><FaCalendarAlt /> Emitido: {formatDate(cert.issued_at)}</span>
                             <span className="d-flex align-items-center gap-1"><FaClock /> Expira: {cert.expires_at ? formatDate(cert.expires_at) : '—'}</span>
                           </div>
                           <small className="text-muted font-monospace">ID: {cert.unique_id.slice(0, 8)}…</small>
                         </div>
-                        <div className="d-flex gap-2">
+                        <div className="d-flex gap-2 flex-shrink-0">
                           <a href={`${config.apiUrl}/certificates/view/${cert.unique_id}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
                             <FaFilePdf /> PDF
                           </a>
