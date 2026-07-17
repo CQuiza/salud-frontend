@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Form, Button, Alert } from 'react-bootstrap'
 import { FaSearch, FaUser, FaIdCard, FaCalendarAlt, FaClock, FaExclamationCircle, FaFilePdf, FaQrcode } from 'react-icons/fa'
 import Badge from '../components/atoms/Badge'
@@ -20,8 +20,9 @@ interface SearchResult {
 }
 
 export default function SearchPage() {
+  const [searchParams] = useSearchParams()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [identityNumber, setIdentityNumber] = useState('')
+  const [identityNumber, setIdentityNumber] = useState(searchParams.get('identity') || '')
   const [result, setResult] = useState<SearchResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -32,14 +33,13 @@ export default function SearchPage() {
     return Object.fromEntries(certTypes.map((t) => [t.id, t.name]))
   }, [certTypes])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!identityNumber.trim()) return
+  async function performSearch(identity: string) {
+    if (!identity.trim()) return
     setLoading(true)
     setError('')
     setResult(null)
     try {
-      const { data } = await api.get<SearchResult[]>(`/certificates/search-by-identity/${encodeURIComponent(identityNumber.trim())}`)
+      const { data } = await api.get<SearchResult[]>(`/certificates/search-by-identity/${encodeURIComponent(identity.trim())}`)
       if (data.length > 0) setResult(data[0])
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
@@ -56,6 +56,19 @@ export default function SearchPage() {
       setLoading(false)
     }
   }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    performSearch(identityNumber)
+  }
+
+  useEffect(() => {
+    const identityFromUrl = searchParams.get('identity')
+    if (identityFromUrl) {
+      performSearch(identityFromUrl)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="min-h-screen bg-content-50">

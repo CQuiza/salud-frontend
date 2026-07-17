@@ -22,6 +22,7 @@ export interface Course {
   description: string | null
   certificate_type_id: number | null
   teacher_id: number | null
+  image_url: string | null
   created_at: string
   updated_at: string
   status: CourseStatus
@@ -31,5 +32,6 @@ export interface CoursePublic {
   id: number
   title: string
   description: string | null
+  image_url: string | null
   status: CourseStatus
 }

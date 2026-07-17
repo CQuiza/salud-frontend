@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import { useAuth } from '../context/AuthContext'
-import { useCourses, useCreateCourse, useUpdateCourse } from '../hooks/useCourses'
+import { useCourses, useCreateCourse, useUpdateCourse, useUploadCourseImage } from '../hooks/useCourses'
 import { useUsers } from '../hooks/useUsers'
 import { useCertificateTypes } from '../hooks/useCertificateTypes'
 import Card from '../components/molecules/Card'
@@ -31,6 +31,7 @@ export default function CoursesPage() {
   const { data: certTypes } = useCertificateTypes()
   const createCourse = useCreateCourse()
   const updateCourse = useUpdateCourse(editing?.id ?? 0)
+  const uploadImage = useUploadCourseImage()
 
   const teacherMap = useMemo(() => {
     const list = users?.items
@@ -58,7 +59,7 @@ export default function CoursesPage() {
   function openCreate() { setEditing(null); setModalOpen(true) }
   function openEdit(c: Course) { setEditing(c); setModalOpen(true) }
 
-  async function handleSubmit(data: { title: string; description: string; status: string; teacher_id: number; certificate_type_id: number }) {
+  async function handleSubmit(data: { title: string; description: string; status: string; teacher_id: number; certificate_type_id: number; imageFile: File | null }) {
     const payload = {
       title: data.title,
       description: data.description || null,
@@ -67,11 +68,18 @@ export default function CoursesPage() {
       certificate_type_id: data.certificate_type_id || null,
     }
     try {
+      let course: Course
       if (editing) {
-        await updateCourse.mutateAsync(payload)
+        course = await updateCourse.mutateAsync(payload) as unknown as Course
+        if (data.imageFile) {
+          await uploadImage.mutateAsync({ courseId: course.id, file: data.imageFile })
+        }
         toast.success('Curso actualizado correctamente')
       } else {
-        await createCourse.mutateAsync(payload)
+        course = await createCourse.mutateAsync(payload) as unknown as Course
+        if (data.imageFile) {
+          await uploadImage.mutateAsync({ courseId: course.id, file: data.imageFile })
+        }
         toast.success('Curso creado correctamente')
       }
       setModalOpen(false); setEditing(null)
@@ -149,7 +157,7 @@ export default function CoursesPage() {
         editing={editing}
         users={users?.items}
         certTypes={certTypes}
-        loading={createCourse.isPending || updateCourse.isPending}
+        loading={createCourse.isPending || updateCourse.isPending || uploadImage.isPending}
         onSubmit={handleSubmit}
         onClose={() => { setModalOpen(false); setEditing(null) }}
       />

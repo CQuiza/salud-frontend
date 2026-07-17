@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { useCourses } from '../hooks/useCourses'
 import { Link } from 'react-router-dom'
 import Skeleton from '../components/atoms/Skeleton'
+import ImageLightbox from '../components/molecules/ImageLightbox'
 import PublicFooter from '../components/organisms/PublicFooter'
+import { config } from '../config'
 import { FaGraduationCap, FaBookOpen, FaClock } from 'react-icons/fa'
 
 export default function CatalogPage() {
@@ -65,10 +67,15 @@ export default function CatalogPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {published.map((course) => (
-              <div key={course.id} className="group rounded-xl border border-neutral-200 bg-white p-6 transition-shadow hover:shadow-md">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-bar-50 text-bar-500 mb-4">
-                  <FaBookOpen className="h-5 w-5" />
-                </div>
+              <div key={course.id} className="group rounded-xl border border-neutral-200 bg-white transition-shadow hover:shadow-md overflow-hidden">
+                <ImageLightbox
+                  src={`${config.apiUrl}/courses/${course.id}/image`}
+                  alt={course.title}
+                  className="w-100"
+                  style={{ height: 160, objectFit: 'cover' }}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+                <div className="p-6">
                 <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-bar-600 transition-colors">
                   {course.title}
                 </h3>
@@ -80,6 +87,7 @@ export default function CatalogPage() {
                   <span>Curso disponible</span>
                 </div>
               </div>
+            </div>
             ))}
           </div>
         )}

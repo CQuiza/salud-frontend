@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Badge from '../../atoms/Badge'
+import ImageLightbox from '../../molecules/ImageLightbox'
 import { FaEye, FaPencilAlt, FaChalkboardTeacher, FaFileAlt } from 'react-icons/fa'
+import { config } from '../../../config'
 import type { Course } from '../../../types'
 
 interface CourseCardProps {
@@ -12,11 +14,26 @@ interface CourseCardProps {
   onEdit: (course: Course) => void
 }
 
+function CourseImage({ course }: { course: Course }) {
+  const [error, setError] = useState(false)
+  if (error) return null
+  return (
+    <ImageLightbox
+      src={`${config.apiUrl}/courses/${course.id}/image`}
+      alt={course.title}
+      className="w-100 rounded-top"
+      style={{ height: 140, objectFit: 'cover' }}
+      onError={() => setError(true)}
+    />
+  )
+}
+
 export default function CourseCard({ course, teacherName, certTypeName, canManage, onEdit }: CourseCardProps) {
   const [expanded, setExpanded] = useState(false)
 
   return (
     <div className="rounded-xl border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow d-flex flex-column">
+      <CourseImage course={course} />
       <div
         className="p-5 d-flex flex-column flex-grow-1"
         style={{ cursor: course.description ? 'pointer' : undefined }}

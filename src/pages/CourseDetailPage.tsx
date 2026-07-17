@@ -6,7 +6,9 @@ import { useUsers } from '../hooks/useUsers'
 import { useCertificateTypes } from '../hooks/useCertificateTypes'
 import Skeleton from '../components/atoms/Skeleton'
 import Badge from '../components/atoms/Badge'
+import ImageLightbox from '../components/molecules/ImageLightbox'
 import ModuleManager from '../components/organisms/course/ModuleManager'
+import { config } from '../config'
 import { FaArrowLeft, FaChalkboardTeacher, FaFileAlt, FaBookOpen, FaCalendarAlt } from 'react-icons/fa'
 import { formatDate } from '../lib/dates'
 
@@ -42,7 +44,15 @@ export default function CourseDetailPage() {
 
       <div className="row g-4">
         <div className="col-12 col-xl-4 order-xl-2">
-          <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm position-sticky" style={{ top: '1rem' }}>
+          <div className="rounded-xl border border-neutral-200 bg-white shadow-sm position-sticky" style={{ top: '1rem' }}>
+            <ImageLightbox
+              src={`${config.apiUrl}/courses/${course.id}/image`}
+              alt={course.title}
+              className="w-100 rounded-top"
+              style={{ height: 160, objectFit: 'cover' }}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
+            <div className="p-4">
             <h6 className="small fw-semibold text-muted text-uppercase mb-3">Información del curso</h6>
             <div className="space-y-2">
               <div className="d-flex align-items-center gap-2 small">
@@ -73,6 +83,7 @@ export default function CourseDetailPage() {
                 <span>Actualizado {formatDate(course.updated_at)}</span>
               </div>
             </div>
+          </div>
           </div>
         </div>
         <div className="col-12 col-xl-8 order-xl-1">
