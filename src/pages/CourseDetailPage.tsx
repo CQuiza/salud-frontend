@@ -20,7 +20,7 @@ export default function CourseDetailPage() {
   const { data: course, isLoading: loadingCourse } = useCourse(id)
   const { data: modules } = useModules({ course_id: id })
   const { data: users } = useUsers({ limit: 500 })
-  const { data: certTypes } = useCertificateTypes()
+  const { data: certTypes } = useCertificateTypes({ limit: 2000 })
 
   if (loadingCourse) return <div className="p-6 lg:p-8"><Skeleton count={3} className="h-8 w-full" /></div>
   if (!course) return <div className="p-6 lg:p-8"><p className="text-muted">Curso no encontrado</p></div>

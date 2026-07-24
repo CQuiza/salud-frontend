@@ -66,7 +66,7 @@ export default function CertificatesPage() {
     { skip: plainSkip, limit: PAGE_SIZE, search: s },
     { enabled: !isAdmin },
   )
-  const { data: certTypes } = useCertificateTypes()
+  const { data: certTypes } = useCertificateTypes({ limit: 2000 })
   const issueCert = useIssueCertificate()
   const updateCert = useUpdateCertificate(editingCert?.id ?? 0)
   const isLoading = isAdmin ? loadingCertified : loadingPlain

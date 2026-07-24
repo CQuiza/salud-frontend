@@ -27,7 +27,7 @@ export default function UserCertificatesPanel() {
     { user_id: uid, limit: 500 },
     { enabled: uid > 0 },
   )
-  const { data: certTypes } = useCertificateTypes()
+  const { data: certTypes } = useCertificateTypes({ limit: 2000 })
   const { data: courses } = useCourses()
   const { data: enrollments } = useEnrollments(
     { user_id: uid },

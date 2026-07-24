@@ -11,6 +11,7 @@ import { taskSubmissionService } from '../services/taskSubmissionService'
 import { downloadTaskFile } from '../lib/download'
 import { formatDate } from '../lib/dates'
 import { sanitizeUrl } from '../lib/sanitize'
+import { config } from '../config'
 import Card from '../components/molecules/Card'
 import Skeleton from '../components/atoms/Skeleton'
 import { FaArrowLeft, FaFilePdf, FaVideo, FaImage, FaFile, FaClipboardList, FaExternalLinkAlt, FaArrowUp, FaFileAlt, FaDownload, FaEye, FaCheck, FaUpload, FaSpinner } from 'react-icons/fa'
@@ -124,7 +125,7 @@ function TaskSubmissionUpload({ taskId }: { taskId: number }) {
           <button
             onClick={() => setConfirmOpen(true)}
             disabled={!file}
-            className="btn btn-sm btn-bar-500 text-white d-inline-flex align-items-center gap-1"
+            className="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
           >
             <FaUpload /> Subir
           </button>
@@ -282,7 +283,10 @@ export default function LessonViewPage() {
                             <a href={sanitizeUrl(task.google_drive_link)} target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaExternalLinkAlt /> Ver en Google Drive</a>
                           )}
                           {task.file_type === 'upload' && task.file_url && (
-                            <button onClick={() => downloadTaskFile(task.id)} className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaArrowUp /> Descargar</button>
+                            <>
+                              <a href={`${config.apiUrl}/tasks/${task.id}/file`} target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaEye /> Ver</a>
+                              <button onClick={() => downloadTaskFile(task.id)} className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"><FaDownload /> Descargar</button>
+                            </>
                           )}
                         </div>
                         {isStudent && <TaskSubmissionUpload taskId={task.id} />}

@@ -28,7 +28,7 @@ export default function CoursesPage() {
 
   const { data: courses, isLoading } = useCourses()
   const { data: users } = useUsers({ role: 'teacher', limit: 500 })
-  const { data: certTypes } = useCertificateTypes()
+  const { data: certTypes } = useCertificateTypes({ limit: 2000 })
   const createCourse = useCreateCourse()
   const updateCourse = useUpdateCourse(editing?.id ?? 0)
   const uploadImage = useUploadCourseImage()

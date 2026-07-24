@@ -4,12 +4,16 @@ import { FaChevronDown, FaChevronRight } from 'react-icons/fa'
 import PublicFooter from '../components/organisms/PublicFooter'
 
 const faqs = [
-  { q: '¿Desde qué dispositivos puedo acceder a la plataforma?', a: 'Nuestra plataforma está diseñada para funcionar correctamente en computadores, tabletas y teléfonos inteligentes, permitiéndote estudiar desde cualquier lugar con conexión a internet.' },
-  { q: '¿Debo conectarme en horarios específicos para estudiar?', a: 'No. Todos los cursos están disponibles en modalidad virtual y puedes ingresar cuando lo desees, avanzando según tu disponibilidad y ritmo de aprendizaje.' },
-  { q: '¿Es posible matricularme en varios cursos al mismo tiempo?', a: 'Sí. Puedes realizar una o varias inscripciones simultáneamente y desarrollar diferentes procesos de formación de acuerdo con tus objetivos profesionales.' },
-  { q: '¿Los programas incluyen certificado?', a: 'Sí. Al completar tu proceso de formación obtendrás un certificado digital y tendrás acceso permanente a la plataforma de aprendizaje durante el desarrollo del curso.' },
-  { q: '¿Cómo se valida la autenticidad de los certificados?', a: 'Cada certificado emitido cuenta con un sistema de verificación mediante código QR, facilitando la consulta y confirmación de su validez de forma rápida y segura.' },
-  { q: '¿Cuál es el proceso para inscribirme?', a: 'Para iniciar tu formación, comunícate con nuestro equipo a través de WhatsApp, selecciona el curso que deseas realizar, completa el proceso de pago y comparte la información solicitada para habilitar tu acceso a la plataforma virtual.' },
+  { q: '¿Los certificados tienen validez?', a: 'Sí. Nuestros certificados acreditan la participación y aprobación del curso realizado. Cada certificado puede verificarse mediante un código QR, garantizando su autenticidad y facilitando su validación.' },
+  { q: '¿Cómo recibo mi certificado?', a: 'Una vez confirmemos tu inscripción y registremos correctamente tus datos en nuestro sistema, recibirás tu certificado de manera inmediata en formato digital, listo para descargar y compartir cuando lo necesites.' },
+  { q: '¿Los cursos son completamente virtuales?', a: 'Sí. Todos nuestros cursos y diplomados se desarrollan en modalidad 100 % virtual, permitiéndote estudiar desde cualquier lugar y avanzar según tu disponibilidad.' },
+  { q: '¿Debo cumplir un horario?', a: 'No. Puedes acceder a la plataforma las 24 horas del día, los 7 días de la semana, y estudiar a tu propio ritmo.' },
+  { q: '¿Cuánto tiempo tengo para realizar el curso?', a: 'Cada curso cuenta con un tiempo de acceso específico, el cual se informa antes de realizar la inscripción.' },
+  { q: '¿Qué métodos de pago aceptan?', a: 'Puedes realizar el pago mediante transferencia bancaria a nuestras cuentas autorizadas. Una vez recibido el comprobante y validado el pago, procederemos con tu proceso de inscripción.' },
+  { q: '¿Necesito experiencia previa?', a: 'Depende del programa. Muchos de nuestros cursos están dirigidos a estudiantes y profesionales del sector salud, mientras que otros requieren conocimientos previos específicos.' },
+  { q: '¿Puedo acceder desde mi celular?', a: 'Sí. Nuestra plataforma es compatible con computadores, tabletas y teléfonos móviles para que estudies desde cualquier dispositivo con conexión a internet.' },
+  { q: '¿Qué pasa si tengo dudas durante el curso?', a: 'Nuestro equipo de soporte estará disponible para orientarte y ayudarte durante tu proceso de formación.' },
+  { q: '¿Cómo puedo comunicarme con ustedes?', a: 'Puedes contactarnos a través de WhatsApp, correo electrónico o mediante el formulario de contacto disponible en nuestro sitio web.' },
 ]
 
 export default function FaqPage() {

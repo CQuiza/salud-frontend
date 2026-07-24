@@ -4,9 +4,10 @@ import { config } from '../config'
 
 
 const faqs = [
-  { q: '¿Los certificados tienen validez legal?', a: 'Sí, todos nuestros programas están alineados con la normativa vigente de educación continua para el sector salud y cuentan con respaldo académico e institucional.' },
-  { q: '¿Cómo recibo mi certificado?', a: 'Una vez completes satisfactoriamente todos los módulos y la evaluación final, tu certificado se generará automáticamente en formato PDF con su respectivo código QR de verificación.' },
-  { q: '¿Qué métodos de pago aceptan?', a: 'Aceptamos tarjetas de crédito/débito, transferencias bancarias locales e internacionales, y pagos a través de plataformas digitales como PSE o PayPal.' },
+  { q: '¿Los certificados tienen validez?', a: 'Sí. Nuestros certificados acreditan la participación y aprobación del curso realizado. Cada certificado puede verificarse mediante un código QR, garantizando su autenticidad y facilitando su validación.' },
+  { q: '¿Cómo recibo mi certificado?', a: 'Una vez confirmemos tu inscripción y registremos correctamente tus datos en nuestro sistema, recibirás tu certificado de manera inmediata en formato digital, listo para descargar y compartir cuando lo necesites.' },
+  { q: '¿Los cursos son completamente virtuales?', a: 'Sí. Todos nuestros cursos y diplomados se desarrollan en modalidad 100 % virtual, permitiéndote estudiar desde cualquier lugar y avanzar según tu disponibilidad.' },
+  { q: '¿Debo cumplir un horario?', a: 'No. Puedes acceder a la plataforma las 24 horas del día, los 7 días de la semana, y estudiar a tu propio ritmo.' },
 ]
 
 export default function HomePage() {
@@ -105,9 +106,9 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 md:px-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div className="order-2 lg:order-1 space-y-8">
-                <h2 className="text-3xl font-semibold text-bar-900 tracking-tight">Formación de Excelencia para el Talento Humano en Salud</h2>
+                <h2 className="text-3xl font-semibold text-bar-900 tracking-tight">Capacítate con cursos virtuales certificados para el sector salud</h2>
                 <p className="text-base text-neutral-600 leading-relaxed text-justify">
-                  En Innova Center, transformamos la educación continua mediante procesos pedagógicos innovadores. Nuestra plataforma está diseñada para satisfacer las necesidades de actualización constante que exige el sistema de salud moderno.
+                  Brindamos formación virtual de calidad para el talento humano en salud, con programas diseñados para fortalecer conocimientos, desarrollar competencias y contribuir al crecimiento profesional de nuestros estudiantes.
                 </p>
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="flex gap-4">
@@ -170,8 +171,8 @@ export default function HomePage() {
               <p className="text-base text-neutral-600 mb-6 text-justify">Fundamentos esenciales para el personal de apoyo y estudiantes en formación inicial.</p>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-200">check_circle</span> Primeros Auxilios</li>
-                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-200">check_circle</span> Bioseguridad</li>
-                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-200">check_circle</span> Atención al Usuario</li>
+                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-200">check_circle</span> Soporte vital básico</li>
+                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-200">check_circle</span> Gestión del duelo</li>
               </ul>
               <Link to="/catalog" className="text-bar-500 text-sm font-medium tracking-wide flex items-center gap-2 group-hover:translate-x-2 transition-transform">
                 Ver más programas <span className="material-symbols-outlined">arrow_forward</span>
@@ -184,9 +185,9 @@ export default function HomePage() {
               <h3 className="text-2xl font-semibold text-bar-900 mb-4">Avanzados</h3>
               <p className="text-base text-neutral-600 mb-6 text-justify">Capacitación técnica de alto nivel para profesionales en ejercicio y especialistas.</p>
               <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-500">check_circle</span> Cuidado Crítico</li>
-                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-500">check_circle</span> Farmacología Clínica</li>
-                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-500">check_circle</span> Gestión Hospitalaria</li>
+                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-500">check_circle</span> Soporte cardiovascular avanzado</li>
+                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-500">check_circle</span> Central de esterilización</li>
+                <li className="flex items-center gap-2 text-sm font-medium"><span className="material-symbols-outlined text-lg text-bar-500">check_circle</span> Primeros Auxilios Psicologicos</li>
               </ul>
               <Link to="/catalog" className="text-bar-200 text-sm font-medium tracking-wide flex items-center gap-2 group-hover:translate-x-2 transition-transform">
                 Ver más programas <span className="material-symbols-outlined">arrow_forward</span>
@@ -199,9 +200,9 @@ export default function HomePage() {
               <h3 className="text-2xl font-semibold text-white mb-4">Diplomados</h3>
               <p className="text-base text-white/70 mb-6 text-justify">Programas extensivos con alta carga horaria y enfoque en competencias específicas.</p>
               <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2 text-sm font-medium text-white/90"><span className="material-symbols-outlined text-lg text-bar-200">stars</span> Auditoría en Salud</li>
-                <li className="flex items-center gap-2 text-sm font-medium text-white/90"><span className="material-symbols-outlined text-lg text-bar-200">stars</span> Salud Pública</li>
-                <li className="flex items-center gap-2 text-sm font-medium text-white/90"><span className="material-symbols-outlined text-lg text-bar-200">stars</span> Docencia Universitaria</li>
+                <li className="flex items-center gap-2 text-sm font-medium text-white/90"><span className="material-symbols-outlined text-lg text-bar-200">stars</span> Gerontologia y geriatria</li>
+                <li className="flex items-center gap-2 text-sm font-medium text-white/90"><span className="material-symbols-outlined text-lg text-bar-200">stars</span> Unidad Oncologica</li>
+                <li className="flex items-center gap-2 text-sm font-medium text-white/90"><span className="material-symbols-outlined text-lg text-bar-200">stars</span> Clinica de heridas</li>
               </ul>
               <Link to="/catalog" className="text-white text-sm font-medium tracking-wide flex items-center gap-2 group-hover:translate-x-2 transition-transform">
                 Explorar diplomados <span className="material-symbols-outlined">arrow_forward</span>
@@ -219,7 +220,7 @@ export default function HomePage() {
                     <span className="material-symbols-outlined">rocket_launch</span> Nuestra Misión
                   </h3>
                   <p className="text-base text-neutral-600 leading-relaxed text-justify">
-                    Impulsar la actualización y el desarrollo continuo de los profesionales del sector salud mediante experiencias de aprendizaje digital innovadoras, accesibles y alineadas con los avances científicos y tecnológicos del ámbito sanitario.
+                    Brindar formación virtual de excelencia para el talento humano en salud, mediante programas académicos innovadores, flexibles y actualizados que impulsen el desarrollo profesional, el fortalecimiento de competencias y la mejora continua de la atención en salud.
                   </p>
                 </div>
                 <div className="bg-white p-8 rounded-2xl shadow-sm border-l-4 border-bar-200 translate-x-4 md:translate-x-8">
@@ -227,11 +228,21 @@ export default function HomePage() {
                     <span className="material-symbols-outlined">visibility</span> Nuestra Visión
                   </h3>
                   <p className="text-base text-neutral-600 leading-relaxed text-justify">
-                    Consolidarnos como el ecosistema digital de aprendizaje y actualización profesional más reconocido del sector salud en Colombia, destacándonos por integrar tecnología, innovación pedagógica y contenidos de alto impacto para responder a los desafíos de la medicina y la atención sanitaria del futuro.
+                    Consolidarnos como el referente nacional en educación virtual para el sector salud, ofreciendo experiencias de aprendizaje innovadoras, tecnología de vanguardia y contenidos de alta calidad que contribuyan al crecimiento profesional y al fortalecimiento del sistema de salud colombiano.
                   </p>
                 </div>
               </div>
-              <div className="relative h-[400px] lg:h-[500px]" />
+              <div className="relative w-full flex items-center justify-center">
+                <div className="relative w-full max-w-[320px] aspect-[9/16] rounded-2xl overflow-hidden shadow-lg">
+                  <iframe
+                    // src="https://www.youtube.com/embed/F5UrGfv3nog?rel=0&showinfo=0"
+                    title="Video promocional"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -240,15 +251,15 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 md:px-10">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-semibold tracking-tight">¿Por qué elegir Innova Center?</h2>
-              <p className="text-base text-white/60 mt-4">La diferencia está en los detalles y en la calidad de nuestra experiencia educativa.</p>
+              <p className="text-base text-white/60 mt-4">Formación virtual diseñada para impulsar tu crecimiento profesional con calidad, flexibilidad y confianza.</p>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-8">
               {[
-                { icon: 'verified', title: 'Certificación inmediata', desc: 'Descarga tu diploma al finalizar.' },
-                { icon: 'qr_code', title: 'Verificación QR', desc: 'Validación instantánea mundial.' },
-                { icon: 'schedule', title: '24/7', desc: 'Acceso total en cualquier horario.' },
-                { icon: 'devices', title: '100% Virtual', desc: 'Sin desplazamientos ni horarios.' },
-                { icon: 'gavel', title: 'Normativa', desc: 'Contenido bajo estándares de ley.' },
+                { icon: 'verified', title: 'Certificación inmediata', desc: 'Obtén y descarga tu certificado de forma inmediata.' },
+                { icon: 'qr_code', title: 'Verificación QR', desc: 'Verifica la autenticidad de tu certificado de manera rápida y segura mediante código QR.' },
+                { icon: 'gavel', title: 'Cumplimiento Normativo', desc: 'Programas desarrollados conforme a la normativa vigente y orientados al fortalecimiento de las competencias del talento humano en salud.' },
+                { icon: 'schedule', title: 'Acceso 24/7', desc: 'Accede a la plataforma en cualquier momento, desde cualquier dispositivo.' },
+                { icon: 'devices', title: '100% Virtual', desc: 'Estudia desde cualquier lugar y avanza a tu propio ritmo, sin horarios fijos.' },
               ].map((item) => (
                 <div key={item.title} className="text-center group">
                   <div className="w-20 h-20 mx-auto bg-white/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-bar-200 transition-all duration-300">
@@ -292,6 +303,17 @@ export default function HomePage() {
                   </div>
                 )
               })}
+            </div>
+
+            <div className="text-center mt-8">
+              <Link
+                to="/faq"
+                className="inline-flex items-center gap-2 text-bar-500 hover:text-bar-700 transition-colors text-sm font-medium tracking-wide"
+              >
+                <span className="material-symbols-outlined text-xl">help</span>
+                Ver más
+                <span className="material-symbols-outlined text-lg">arrow_forward</span>
+              </Link>
             </div>
           </div>
         </section>
