@@ -68,13 +68,22 @@ export default function CatalogPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {published.map((course) => (
               <div key={course.id} className="group rounded-xl border border-neutral-200 bg-white transition-shadow hover:shadow-md overflow-hidden">
-                <ImageLightbox
-                  src={`${config.apiUrl}/courses/${course.id}/image`}
-                  alt={course.title}
-                  className="w-100"
-                  style={{ height: 160, objectFit: 'cover' }}
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                />
+                {course.image_url ? (
+                  <ImageLightbox
+                    src={`${config.apiUrl}/courses/${course.id}/image`}
+                    alt={course.title}
+                    className="w-100"
+                    style={{ height: 160, objectFit: 'cover' }}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  />
+                ) : (
+                  <ImageLightbox
+                    src="/default-course-image.png"
+                    alt={course.title}
+                    className="w-100"
+                    style={{ height: 160, objectFit: 'cover' }}
+                  />
+                )}
                 <div className="p-6">
                 <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-bar-600 transition-colors">
                   {course.title}

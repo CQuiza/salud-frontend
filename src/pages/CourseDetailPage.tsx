@@ -45,13 +45,22 @@ export default function CourseDetailPage() {
       <div className="row g-4">
         <div className="col-12 col-xl-4 order-xl-2">
           <div className="rounded-xl border border-neutral-200 bg-white shadow-sm position-sticky" style={{ top: '1rem' }}>
-            <ImageLightbox
-              src={`${config.apiUrl}/courses/${course.id}/image`}
-              alt={course.title}
-              className="w-100 rounded-top"
-              style={{ height: 160, objectFit: 'cover' }}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-            />
+            {course.image_url ? (
+              <ImageLightbox
+                src={`${config.apiUrl}/courses/${course.id}/image`}
+                alt={course.title}
+                className="w-100 rounded-top"
+                style={{ height: 160, objectFit: 'cover' }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+              />
+            ) : (
+              <ImageLightbox
+                src="/default-course-image.png"
+                alt={course.title}
+                className="w-100 rounded-top"
+                style={{ height: 160, objectFit: 'cover' }}
+              />
+            )}
             <div className="p-4">
             <h6 className="small fw-semibold text-muted text-uppercase mb-3">Información del curso</h6>
             <div className="space-y-2">

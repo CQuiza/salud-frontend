@@ -16,7 +16,16 @@ interface CourseCardProps {
 
 function CourseImage({ course }: { course: Course }) {
   const [error, setError] = useState(false)
-  if (error) return null
+  if (!course.image_url || error) {
+    return (
+      <ImageLightbox
+        src="/default-course-image.png"
+        alt={course.title}
+        className="w-100 rounded-top"
+        style={{ height: 140, objectFit: 'cover' }}
+      />
+    )
+  }
   return (
     <ImageLightbox
       src={`${config.apiUrl}/courses/${course.id}/image`}
