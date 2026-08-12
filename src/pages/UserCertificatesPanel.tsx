@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useUser } from '../hooks/useUsers'
@@ -12,11 +12,20 @@ import Badge from '../components/atoms/Badge'
 import Skeleton from '../components/atoms/Skeleton'
 import SearchBar from '../components/molecules/SearchBar'
 import BatchCertificateModal from '../components/organisms/BatchCertificateModal'
-import { FaArrowLeft, FaPlus, FaFilePdf, FaQrcode } from 'react-icons/fa'
+import RenewCertificateModal from '../components/organisms/RenewCertificateModal'
+import EditCertificateStatusModal from '../components/organisms/EditCertificateStatusModal'
+import { FaArrowLeft, FaPlus, FaFilePdf, FaQrcode, FaSyncAlt, FaFilter, FaPencilAlt } from 'react-icons/fa'
 import { getErrorMessage } from '../lib/error'
 import { formatDate } from '../lib/dates'
 import { certificateStatusVariant } from '../lib/statusVariant'
 import { config } from '../config'
+import type { Certificate, CertificateStatus } from '../types'
+
+const STATUS_OPTIONS: { value: CertificateStatus; label: string }[] = [
+  { value: 'active', label: 'Activo' },
+  { value: 'revoked', label: 'Revocado' },
+  { value: 'expired', label: 'Expirado' },
+]
 
 export default function UserCertificatesPanel() {
   const { userId } = useParams<{ userId: string }>()
@@ -37,7 +46,12 @@ export default function UserCertificatesPanel() {
   const deleteEnrollment = useDeleteEnrollment()
 
   const [batchModalOpen, setBatchModalOpen] = useState(false)
+  const [renewCert, setRenewCert] = useState<Certificate | null>(null)
+  const [editCert, setEditCert] = useState<Certificate | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilterOpen, setStatusFilterOpen] = useState(false)
+  const [selectedStatuses, setSelectedStatuses] = useState<Set<CertificateStatus>>(new Set())
+  const filterRef = useRef<HTMLDivElement>(null)
 
   const typeMap = useMemo(() => {
     if (!certTypes) return {} as Record<number, string>
@@ -77,14 +91,39 @@ export default function UserCertificatesPanel() {
       .catch((err) => toast.error(getErrorMessage(err)))
   }
 
+  function toggleStatus(status: CertificateStatus) {
+    setSelectedStatuses((prev) => {
+      const next = new Set(prev)
+      if (next.has(status)) next.delete(status)
+      else next.add(status)
+      return next
+    })
+  }
+
+  function clearStatuses() {
+    setSelectedStatuses(new Set())
+  }
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setStatusFilterOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
   const isLoading = loadingUser || loadingCerts
 
   const filteredCertificates = useMemo(() => {
     const list = certificates?.items
     if (!list) return []
-    if (!searchQuery.trim()) return list
-    const q = searchQuery.toLowerCase()
+    const statuses = selectedStatuses
     return list.filter((cert) => {
+      if (statuses.size > 0 && !statuses.has(cert.status)) return false
+      if (!searchQuery.trim()) return true
+      const q = searchQuery.toLowerCase()
       const info = cert.certificate_type_id != null ? typeInfoMap[cert.certificate_type_id] : undefined
       if (!info) return false
       return (
@@ -92,7 +131,7 @@ export default function UserCertificatesPanel() {
         (info.reference && info.reference.toLowerCase().includes(q))
       )
     })
-  }, [certificates, searchQuery, typeInfoMap])
+  }, [certificates, searchQuery, typeInfoMap, selectedStatuses])
 
   return (
     <>
@@ -126,8 +165,36 @@ export default function UserCertificatesPanel() {
           <div className="p-4"><Skeleton count={5} className="h-10 w-full" /></div>
         ) : (
           <>
-          <div className="border-bottom px-3 py-3">
-            <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Buscar por tipo o referencia..." />
+          <div className="border-bottom px-3 py-3 d-flex gap-2 align-items-center">
+            <div className="flex-grow-1">
+              <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Buscar por tipo o referencia..." />
+            </div>
+            <div className="position-relative" ref={filterRef}>
+              <button
+                onClick={() => setStatusFilterOpen(!statusFilterOpen)}
+                className={`btn btn-sm d-inline-flex align-items-center gap-1 ${selectedStatuses.size > 0 ? 'btn-primary' : 'btn-outline-secondary'}`}
+              >
+                <FaFilter />
+                Estado
+                {selectedStatuses.size > 0 && (
+                  <Badge variant="info">{selectedStatuses.size}</Badge>
+                )}
+              </button>
+              {statusFilterOpen && (
+                <div className="position-absolute end-0 mt-1 z-50 rounded-lg border border-neutral-200 bg-white shadow-lg p-2" style={{ minWidth: 160 }}>
+                  <label className="d-flex align-items-center gap-2 px-2 py-1 mb-0 small cursor-pointer">
+                    <input type="checkbox" checked={selectedStatuses.size === 0} onChange={clearStatuses} />
+                    Todos
+                  </label>
+                  {STATUS_OPTIONS.map((opt) => (
+                    <label key={opt.value} className="d-flex align-items-center gap-2 px-2 py-1 mb-0 small cursor-pointer">
+                      <input type="checkbox" checked={selectedStatuses.has(opt.value)} onChange={() => toggleStatus(opt.value)} />
+                      {opt.label}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="table-responsive">
             <table className="table table-sm table-striped mb-0">
@@ -227,6 +294,19 @@ export default function UserCertificatesPanel() {
                             >
                               <FaQrcode />
                             </button>
+                            <button
+                              onClick={() => setEditCert(cert)}
+                              className="btn btn-sm btn-outline-secondary"
+                            >
+                              <FaPencilAlt />
+                            </button>
+                            <button
+                              onClick={() => setRenewCert(cert)}
+                              className="btn btn-sm btn-outline-primary"
+                              disabled={cert.status === 'revoked'}
+                            >
+                              <FaSyncAlt />
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -248,6 +328,22 @@ export default function UserCertificatesPanel() {
           userId={uid}
           userName={`${user?.name || ''} ${user?.first_last_name || ''}`.trim() || user?.email || ''}
           certTypes={certTypes || []}
+        />
+      )}
+
+      {renewCert && (
+        <RenewCertificateModal
+          open
+          onClose={() => setRenewCert(null)}
+          certificate={renewCert}
+        />
+      )}
+
+      {editCert && (
+        <EditCertificateStatusModal
+          open
+          onClose={() => setEditCert(null)}
+          certificate={editCert}
         />
       )}
     </>
