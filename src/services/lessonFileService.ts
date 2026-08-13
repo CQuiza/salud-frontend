@@ -28,4 +28,19 @@ export const lessonFileService = {
     const base = `${config.apiUrl}/lessons/${lessonId}/files/${fileId}/file`
     return download ? `${base}?download=true` : base
   },
+
+  uploadFilesToLesson: async (lessonId: number, files: File[]): Promise<{ uploaded: string[]; failed: string[] }> => {
+    const uploaded: string[] = []
+    const failed: string[] = []
+    for (const file of files) {
+      try {
+        const created = await lessonFileService.create(lessonId, { original_filename: file.name, mime_type: file.type })
+        await lessonFileService.uploadFile(lessonId, created.id, file)
+        uploaded.push(file.name)
+      } catch {
+        failed.push(file.name)
+      }
+    }
+    return { uploaded, failed }
+  },
 }

@@ -80,8 +80,13 @@ export default function UsersPage() {
   async function handleFormSubmit(data: Record<string, unknown>, mode: 'create' | 'edit') {
     try {
       if (mode === 'edit') {
-        await updateUser.mutateAsync(data as Parameters<typeof updateUser.mutateAsync>[0])
-        toast.success('Usuario actualizado correctamente')
+        const res = await updateUser.mutateAsync(data as Parameters<typeof updateUser.mutateAsync>[0])
+        const regenerated = (res as { certificates_regenerated?: number }).certificates_regenerated
+        toast.success(
+          regenerated
+            ? `Usuario actualizado correctamente (${regenerated} certificado${regenerated !== 1 ? 's' : ''} activo${regenerated !== 1 ? 's' : ''} regenerado${regenerated !== 1 ? 's' : ''})`
+            : 'Usuario actualizado correctamente',
+        )
       } else {
         await createUser.mutateAsync(data as unknown as UserCreate)
         toast.success('Usuario creado correctamente')

@@ -1,8 +1,7 @@
-import { useRef } from 'react'
 import { useLessonFiles, useCreateLessonFile, useUploadLessonFile, useDeleteLessonFile } from '../../../hooks/useLessonFiles'
-import Button from '../../atoms/Button'
+import FileDropzone from '../../molecules/FileDropzone'
 import Skeleton from '../../atoms/Skeleton'
-import { FaPlus, FaTrashAlt, FaFileAlt } from 'react-icons/fa'
+import { FaTrashAlt, FaFileAlt } from 'react-icons/fa'
 import { toast } from 'sonner'
 import { getErrorMessage } from '../../../lib/error'
 
@@ -11,27 +10,24 @@ interface LessonFileManagerProps {
 }
 
 export default function LessonFileManager({ lessonId }: LessonFileManagerProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const { data: files, isLoading } = useLessonFiles(lessonId)
   const createFile = useCreateLessonFile()
   const uploadFile = useUploadLessonFile()
   const deleteFile = useDeleteLessonFile()
 
-  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (fileInputRef.current) fileInputRef.current.value = ''
-
-    try {
-      const created = await createFile.mutateAsync({
-        lessonId,
-        original_filename: file.name,
-        mime_type: file.type,
-      })
-      await uploadFile.mutateAsync({ lessonId, fileId: created.id, file })
-      toast.success('Archivo subido correctamente')
-    } catch (err) {
-      toast.error(getErrorMessage(err))
+  async function handleFiles(selected: File[]) {
+    for (const file of selected) {
+      try {
+        const created = await createFile.mutateAsync({
+          lessonId,
+          original_filename: file.name,
+          mime_type: file.type,
+        })
+        await uploadFile.mutateAsync({ lessonId, fileId: created.id, file })
+        toast.success('Archivo subido correctamente')
+      } catch (err) {
+        toast.error(getErrorMessage(err))
+      }
     }
   }
 
@@ -46,18 +42,10 @@ export default function LessonFileManager({ lessonId }: LessonFileManagerProps) 
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-between mb-2">
+      <div className="mb-2">
         <label className="form-label small fw-medium text-secondary mb-0">Archivos</label>
-        <Button onClick={() => fileInputRef.current?.click()} loading={createFile.isPending || uploadFile.isPending}>
-          <FaPlus className="me-1" /> Subir archivo
-        </Button>
       </div>
-      <input
-        ref={fileInputRef}
-        type="file"
-        className="d-none"
-        onChange={handleFileSelect}
-      />
+      <FileDropzone multiple onFiles={handleFiles} disabled={createFile.isPending || uploadFile.isPending} />
 
       {isLoading ? (
         <Skeleton count={2} className="h-10 w-full" />

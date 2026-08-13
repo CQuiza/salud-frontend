@@ -7,6 +7,7 @@ import { useModules } from '../../../hooks/useModules'
 import { useLessons } from '../../../hooks/useLessons'
 import { moduleService } from '../../../services/moduleService'
 import { lessonService } from '../../../services/lessonService'
+import { lessonFileService } from '../../../services/lessonFileService'
 import Card from '../../molecules/Card'
 import Button from '../../atoms/Button'
 import Skeleton from '../../atoms/Skeleton'
@@ -52,6 +53,7 @@ export default function ModuleManager({ courseId, canManage }: ModuleManagerProp
   const [lessonModal, setLessonModal] = useState(false)
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null)
   const [lessonModuleId, setLessonModuleId] = useState(0)
+  const [lessonSubmitting, setLessonSubmitting] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<{ type: 'module' | 'lesson'; id: number } | null>(null)
   const [taskModalLessonId, setTaskModalLessonId] = useState<number | null>(null)
   const [assessmentModalModuleId, setAssessmentModalModuleId] = useState<number | null>(null)
@@ -66,13 +68,33 @@ export default function ModuleManager({ courseId, canManage }: ModuleManagerProp
     } catch (err) { toast.error(getErrorMessage(err)) }
   }
 
-  async function handleLessonSubmit(data: { title: string; text_content: string; image_content_url: string; video_content_url: string; file_content_url: string; order_index: number }) {
+  async function handleLessonSubmit(data: { title: string; text_content: string; image_content_url: string; video_content_url: string; file_content_url: string; order_index: number }, files?: File[]) {
     const payload = { title: data.title, text_content: data.text_content || null, image_content_url: data.image_content_url || null, video_content_url: data.video_content_url || null, file_content_url: data.file_content_url || null, order_index: data.order_index }
+    setLessonSubmitting(true)
     try {
-      if (editingLesson) { await updateLesson.mutateAsync({ id: editingLesson.id, data: payload }); toast.success('Lección actualizada correctamente') }
-      else { await createLesson.mutateAsync({ module_id: lessonModuleId, ...payload }); toast.success('Lección creada correctamente') }
+      if (editingLesson) {
+        await updateLesson.mutateAsync({ id: editingLesson.id, data: payload })
+        toast.success('Lección actualizada correctamente')
+      } else {
+        const created = await createLesson.mutateAsync({ module_id: lessonModuleId, ...payload })
+        if (files && files.length > 0) {
+          toast.info(`Subiendo ${files.length} archivo${files.length !== 1 ? 's' : ''} a la lección...`)
+          const { uploaded, failed } = await lessonFileService.uploadFilesToLesson(created.id, files)
+          if (failed.length > 0) {
+            toast.warning(`Lección creada · ${uploaded.length} archivo${uploaded.length !== 1 ? 's' : ''} subido${uploaded.length !== 1 ? 's' : ''}, ${failed.length} fallido${failed.length !== 1 ? 's' : ''}: ${failed.join(', ')}`)
+          } else {
+            toast.success(`Lección creada correctamente · ${uploaded.length} archivo${uploaded.length !== 1 ? 's' : ''} subido${uploaded.length !== 1 ? 's' : ''}`)
+          }
+        } else {
+          toast.success('Lección creada correctamente')
+        }
+      }
       setLessonModal(false); setEditingLesson(null)
-    } catch (err) { toast.error(getErrorMessage(err)) }
+    } catch (err) {
+      toast.error(getErrorMessage(err))
+    } finally {
+      setLessonSubmitting(false)
+    }
   }
 
   async function handleConfirmDelete() {
@@ -185,7 +207,7 @@ export default function ModuleManager({ courseId, canManage }: ModuleManagerProp
         key={editingLesson?.id ?? 'new-lesson'}
         open={lessonModal}
         editing={editingLesson}
-        loading={createLesson.isPending || updateLesson.isPending}
+        loading={createLesson.isPending || updateLesson.isPending || lessonSubmitting}
         onSubmit={handleLessonSubmit}
         onClose={() => { setLessonModal(false); setEditingLesson(null) }}
         lessonId={editingLesson?.id}
